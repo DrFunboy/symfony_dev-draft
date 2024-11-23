@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Draft{% endblock %}
+
+{% block body %}
+    <h1>Create new Draft</h1>
+
+    {{ include('draft/_form.html.twig') }}
+
+    <a href="{{ path('app_draft_index') }}">back to list</a>
+{% endblock %}

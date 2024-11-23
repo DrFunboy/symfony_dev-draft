@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Developer{% endblock %}
+
+{% block body %}
+    <h1>Developer</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ developer.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ developer.name }}</td>
+            </tr>
+            <tr>
+                <th>Birth</th>
+                <td>{{ developer.birth ? developer.birth|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ developer.email }}</td>
+            </tr>
+            <tr>
+                <th>Tel</th>
+                <td>{{ developer.tel }}</td>
+            </tr>
+            <tr>
+                <th>Role</th>
+                <td>{{ developer.role }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_developer_index') }}">back to list</a>
+
+    <a href="{{ path('app_developer_edit', {'id': developer.id}) }}">edit</a>
+
+    {{ include('developer/_delete_form.html.twig') }}
+{% endblock %}
