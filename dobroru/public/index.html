@@ -134,29 +134,30 @@
                 <div class="spinner-border text-primary mx-auto my-2" style="width: 3rem; height: 3rem;" role="status">
                 </div>
             </div>
-            <div class="tab-content" id="nav-tabContent">
+            <div class="tab-content" id="nav-tabContent" data-link="visible{:!loading}">
                 <div class="tab-pane active show" id="tab-developer" role="tabpanel">
-                    <div data-link="visible{:!loading}">
                         <button class="btn btn-sm btn-outline-success my-1" data-link="{on ~addObj 'developer'}">
                             <i class="fa fa-plus"></i>
                         </button>
                         <div data-link="{include tmpl='#tpl_devlist'}"></div>
-                    </div>
                 </div>
 
                 <div class="tab-pane" id="tab-draft" role="tabpanel">
-                    <div data-link="visible{:!loading}">
-                        <button class="btn btn-sm btn-outline-success my-1" data-link="{on ~addObj 'draft'}">
-                            <i class="fa fa-plus"></i>
-                        </button>
-                        <div data-link="{include tmpl='#tpl_draftlist'}"></div>
-                    </div>
+                    <button class="btn btn-sm btn-outline-success my-1" data-link="{on ~addObj 'draft'}">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                    <div data-link="{include tmpl='#tpl_draftlist'}"></div>
                 </div>
 
                 <div class="tab-pane" id="tab-dependence" role="tabpanel">
-                    <div data-link="visible{:!loading} {include tmpl='#tpl_dependenceList'}">
+                    <div data-link="{include tmpl='#tpl_dependenceList'}">
                     </div>
                 </div>
+
+                <div>Средний возраст разработчика: <span data-link="text{:stats^avg_ageold}"></span></div>
+                <div>Средняя заполненность прокта: <span data-link="text{:stats^avg_depend}"></span></div>
+                <div>Всего разработчиков: <span data-link="text{:stats^cnt_developer}"></span></div>
+                <div>Всего проектов: <span data-link="text{:stats^cnt_draft}"></span></div>
             </div>
         </div>
     </div>
@@ -166,6 +167,7 @@
             devlist: [],
             draftlist: [],
             showed: {},
+            stats: {}
         };
         $.link(true, '#main-card', appData, {
             saveObj: function (table, e, objData) {
@@ -227,17 +229,27 @@
             $.observable(appData).setProperty({ loading: true });
             $.get('draft', function (draftData) {
                 $.get('developer', function (devData) {
-                    var devlist = JSON.parse(devData || '{}').rows,
-                        draftlist = JSON.parse(draftData || '{}').rows;
 
-                    $.observable(appData).setProperty({
-                        devlist: devlist,
-                        draftlist: draftlist,
-                        loading: false,
+                    $.get('stats', function (stats) {
+                        var devlist = JSON.parse(devData || '{}').rows,
+                            draftlist = JSON.parse(draftData || '{}').rows,
+                            statData = JSON.parse(stats || '{}');
+
+                        statData['avg_birth'] = new Date(statData['avg_birth_timestamp']*1000);
+                        statData['avg_ageold'] = new Date().getFullYear() - statData['avg_birth'].getFullYear();
+                        statData['avg_depend'] = (statData['avg_depend']*1).toFixed(2)*1;
+
+                        $.observable(appData).setProperty({
+                            devlist: devlist,
+                            draftlist: draftlist,
+                            loading: false,
+                            stats: statData
+                        });
                     });
                 });
             });
         }
+        
 
         updateData();
     </script>
